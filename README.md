@@ -98,6 +98,25 @@ proxy
 console.log('toxy proxy listening on port:', 3000)
 console.log('toxy admin server listening on port:', 9000)
 
+
+var toxy = require('toxy')
+var proxy = toxy()
+
+proxy
+  .forward('http://server.net')
+  .poison(toxy.poisons.bandwidth({ bps: 1024 }))
+  .rule(toxy.rules.method('GET'))
+
+var route = proxy
+  .get('/foo')
+  .toPath('/bar')
+  .host('server.net')
+  .forward('http://new.server.net')
+
+route
+  .poison(toxy.poisons.bandwidth({ bps: 512 }))
+  .rule(toxy.rules.contentType('json'))
+
 ```
 
 ```
